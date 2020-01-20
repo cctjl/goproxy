@@ -35,7 +35,8 @@ func IsFileExisted(f string) bool {
 }
 
 func startProxy(option config.AllConf) {
-	// 启动 http 代理
+	// 启动 http 代理，在此之前先将配置设置为全局变量
+	config.Config = option
 	for i := 0; i < len(option.Http); i++ {
 		httpConf := &option.Http[i]
 		if httpConf.Ishttps {
@@ -44,13 +45,9 @@ func startProxy(option config.AllConf) {
 			go httpProxy.StartHttpProxy(*httpConf)
 		}
 	}
-	// 启动 websocket 代理，其中消息上下行统一封装
-	for i := 0; i < len(option.Websocket); i++ {
-
-	}
 
 	log.Println("所有任务已启动")
-	// 主协程陷入休眠
+	// 主协程陷入永久休眠
 	config.Wg.Add(1)
 	config.Wg.Wait()
 }

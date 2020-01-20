@@ -2,7 +2,7 @@
 http:
   # 支持多域名转发到不同地址
   - ishttps: false  # 是否 https, true|false
-    domain: www.self.com
+    domain: 127.0.0.1
     timeout: 10 # 默认10s，后端无返回将关闭双向连接
     # 认证部分，mode不是 http｜https 或缺少任一项则不检查 header 中是否有 tokenKey
     auth:
@@ -12,22 +12,22 @@ http:
       host: 0.0.0.0
       port: 80
     hosts:
-      - host: 127.0.0.1
-        port: 8080
-      - host: 127.0.0.1
+      - host: www.baidu.com
         port: 80
+      - host: www.qq.com
+        port:
 
-websocket:
-  - timeout: 10  # 连接超过秒数没有消息来往将断开客户端连接
-    # 队列配置使用 json 字符串，一边可以改为支持其他队列，需要队列地址，上行/下行消息队列名
-    queuename: redis
-    upqueue: '{"host": "127.0.0.1", "port": 6379, "db": 1, "queueName": "onQueue"}'
-    downqueue: '{"host": "127.0.0.1", "port": 6379, "db": 1, "queueName": "downQueue"}'
-    localhost:
-      host: 0.0.0.0
-      port: 5678
-    hosts:
-      - host: 127.0.0.1
-        port: 8080
-      - host: 127.0.0.1
-        port: 80
+#websocket:
+#  - timeout: 10  # 连接超过秒数没有消息来往将断开客户端连接
+#    # 队列配置使用 json 字符串，一边可以改为支持其他队列，需要队列地址，上行/下行消息队列名
+#    queuename: redis
+#    upqueue: '{"host": "127.0.0.1", "port": 6379, "db": 1, "queueName": "onQueue"}'
+#    downqueue: '{"host": "127.0.0.1", "port": 6379, "db": 1, "queueName": "downQueue"}'
+#    localhost:
+#      host: 0.0.0.0
+#      port: 5678
+#    hosts:
+#      - host: 127.0.0.1
+#        port: 8080
+#      - host: 127.0.0.1
+#        port: 80

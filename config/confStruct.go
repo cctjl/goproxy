@@ -23,14 +23,14 @@ type HttpConf struct {
 	Hosts     []NetAddress
 }
 
-type WebsocketConf struct {
-	Timeout   uint
-	QueueName string
-	UpQueue   string
-	DownQueue string
-	LocalHost NetAddress
-	Hosts     []NetAddress
-}
+//type WebsocketConf struct {
+//	Timeout   uint
+//	QueueName string
+//	UpQueue   string
+//	DownQueue string
+//	LocalHost NetAddress
+//	Hosts     []NetAddress
+//}
 
 type RedisConf struct {
 	Host      string
@@ -40,6 +40,6 @@ type RedisConf struct {
 }
 
 type AllConf struct {
-	Http      []HttpConf
-	Websocket []WebsocketConf
+	Http []HttpConf
+	//Websocket []WebsocketConf
 }

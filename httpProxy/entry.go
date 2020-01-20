@@ -6,11 +6,9 @@ package httpProxy
 
 import (
 	"awesomeProject1/config"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -19,6 +17,7 @@ func StartHttpProxy(option config.HttpConf) {
 	strLocalAddress := string(option.LocalHost.Host) + ":" + strconv.Itoa(int(option.LocalHost.Port))
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
+
 	server := &http.Server{
 		Addr:              strLocalAddress,
 		Handler:           mux,
@@ -26,7 +25,7 @@ func StartHttpProxy(option config.HttpConf) {
 		ReadTimeout:       time.Second * 3,
 		ReadHeaderTimeout: time.Second * 1,
 		WriteTimeout:      time.Second * 3,
-		IdleTimeout:       time.Duration(option.Timeout),
+		IdleTimeout:       time.Duration(option.Timeout) * time.Second,
 		MaxHeaderBytes:    8072,
 		TLSNextProto:      nil,
 		ConnState:         nil,
@@ -43,18 +42,27 @@ func StartHttpsProxy(option config.HttpConf) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	_, e := fmt.Fprintln(w, "hello world")
-
-	if e != nil {
-		log.Println("写入消息失败: " + getUrl(r))
+	host := r.Host
+	currConfig := config.HttpConf{}
+	for _, v := range config.Config.Http {
+		if v.Domain == host {
+			currConfig = v
+			break
+		}
 	}
-}
-
-func getUrl(r *http.Request) string {
-	scheme := "http://"
-	if r.TLS != nil {
-		scheme = "https://"
+	if currConfig.Domain == "" {
+		log.Println("未找到对应域名配置：", host)
+		http.Error(w, "未配置处理服务器地址", http.StatusNotFound)
+		return
 	}
-	url := strings.Join([]string{scheme, r.Host, r.RequestURI}, "")
-	return url
+	url := GetUrl(r, "")
+	log.Println("收到请求：", url)
+
+	if currConfig.Auth.TokenKey != "" {
+		authResult := DoAuth(r)
+		log.Println("认证未通过：", url)
+		http.Error(w, "认证失败："+authResult.Msg, http.StatusForbidden)
+		return
+	}
+	DoProxy(&w, r, &currConfig)
 }
